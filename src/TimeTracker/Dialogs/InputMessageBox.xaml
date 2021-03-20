@@ -1,0 +1,39 @@
+﻿<mct:Window x:Class="TimeTracker.Dialogs.InputMessageBox"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:mct="http://schemas.masch212.de/MaSch/Wpf/Controls"
+            Title="Time Tracker"
+            Width="400"
+            DataContext="{Binding RelativeSource={RelativeSource Self}}"
+            FocusManager.FocusedElement="{Binding ElementName=NameTextBox}"
+            OnlyClose="True"
+            ResizeMode="NoResize"
+            SizeToContent="Height"
+            WindowStyle="ToolWindow"
+            mc:Ignorable="d">
+    <mct:Window.CustomIcon>
+        <mct:IconPresenter Padding="4" Icon="{Binding TitleIcon}" />
+    </mct:Window.CustomIcon>
+    <StackPanel>
+        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+        <TextBox x:Name="NameTextBox"
+                 Margin="0,10,0,0"
+                 PreviewKeyDown="NameTextBox_PreviewKeyDown"
+                 PreviewKeyUp="NameTextBox_PreviewKeyUp"
+                 Text="{Binding Text}" />
+        <StackPanel Margin="-5,10,-5,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+            <Button MinWidth="100"
+                    Margin="5,0"
+                    Click="OnCancelClicked"
+                    Content="Cancel" />
+            <Button MinWidth="100"
+                    Margin="5,0"
+                    Click="OnOkClicked"
+                    Content="OK" />
+        </StackPanel>
+    </StackPanel>
+</mct:Window>

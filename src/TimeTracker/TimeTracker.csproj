@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>TimeTracker</RootNamespace>
+    <TargetFrameworks>net48;net5.0-windows</TargetFrameworks>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <OutputType>WinExe</OutputType>
+    <LangVersion>latest</LangVersion>
+    
+    <Nullable>disable</Nullable>
+    <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
+    <OutputPath>../../bin/$(Configuration)</OutputPath>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>..\..\resources\TimeTracker.ico</ApplicationIcon>
+
+    <GenerateSqlQueryAccessor>true</GenerateSqlQueryAccessor>
+    <SqlQueryAccessorRootDir>Queries</SqlQueryAccessorRootDir>
+    <SqlQueryAccessorName>SqlQueries</SqlQueryAccessorName>
+
+    <Authors>Marc Schmidt</Authors>
+    <Copyright>Copyright © Marc Schmidt 2021</Copyright>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <CompilerVisibleProperty Include="Nullable" />
+    <CompilerVisibleProperty Include="ProjectDir" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+
+    <CompilerVisibleProperty Include="GenerateSqlQueryAccessor" />
+    <CompilerVisibleProperty Include="SqlQueryAccessorRootDir" />
+    <CompilerVisibleProperty Include="SqlQueryAccessorName" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="$(TargetFramework) == 'net48'">
+    <PublishDir>$(OutputPath)/$(TargetFramework)/$(RuntimeIdentifier)/publish/bin</PublishDir>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="Queries\**\*.sql" />
+    <None Remove="App.config" Condition="$(TargetFramework) != 'net48'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Queries\**\*.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="..\..\resources\TimeTracker.ico" Link="Resources\TimeTracker.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MaSch.Core" Version="0.2.2" />
+    <PackageReference Include="MaSch.Data" Version="0.1.2" />
+    <!--<PackageReference Include="MaSch.Generators" Version="0.3.0" />-->
+    <PackageReference Include="MaSch.Presentation" Version="0.1.4" />
+    <PackageReference Include="MaSch.Presentation.Wpf" Version="0.1.2" />
+    <PackageReference Include="MaSch.Presentation.Wpf.Controls" Version="0.1.4" />
+    <PackageReference Include="MaSch.Presentation.Wpf.MaterialDesign" Version="0.1.2" />
+    <PackageReference Include="MaSch.Presentation.Wpf.Themes" Version="0.1.3" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.3" />
+    <ProjectReference Include="..\..\..\MaSch\src\Generators\MaSch.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <Target Name="Net48AfterPublish" AfterTargets="Publish" Condition="$(TargetFramework) == 'net48'">
+    <ItemGroup>
+      <RootFiles Include="$(PublishDir)TimeTracker.*" />
+    </ItemGroup>
+    
+    <Move SourceFiles="@(RootFiles)" DestinationFolder="$(PublishDir).." />
+  </Target>
+</Project>

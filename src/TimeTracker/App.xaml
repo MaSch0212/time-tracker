@@ -1,0 +1,24 @@
+﻿<Application x:Class="TimeTracker.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:TimeTracker.Converters"
+             xmlns:mconv="http://schemas.masch212.de/MaSch/Wpf/Converter"
+             Startup="Application_Startup">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/MaSch.Presentation.Wpf.Themes;component/ControlStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <conv:NumberRoundingConverter x:Key="NumberFloorConverter"
+                                          Decimals="0"
+                                          RoundingMode="ToZero" />
+            <mconv:BoolToVisibilityConverter x:Key="TrueToVisibleConverter" />
+            <mconv:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <mconv:ValueConverterGroup x:Key="FalseToVisibleConverter">
+                <mconv:BoolNegationConverter />
+                <mconv:BoolToVisibilityConverter />
+            </mconv:ValueConverterGroup>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

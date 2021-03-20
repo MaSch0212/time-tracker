@@ -1,0 +1,325 @@
+﻿<mct:Window x:Class="TimeTracker.Views.MainView"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:local="clr-namespace:TimeTracker.Views"
+            xmlns:m="http://schemas.masch212.de/MaSch/Wpf"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:mct="http://schemas.masch212.de/MaSch/Wpf/Controls"
+            xmlns:models="clr-namespace:TimeTracker.Models"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            xmlns:vm="clr-namespace:TimeTracker.ViewModels"
+            Title="Time Tracker"
+            Width="400"
+            Height="600"
+            Icon="../Resources/TimeTracker.ico"
+            Maximizable="False"
+            mc:Ignorable="d">
+    <mct:Window.DataContext>
+        <vm:MainViewModel />
+    </mct:Window.DataContext>
+    <mct:Window.Resources>
+        <m:MaterialDesignIcon x:Key="StartIcon" Icon="Play" />
+        <m:MaterialDesignIcon x:Key="StopIcon" Icon="Stop" />
+    </mct:Window.Resources>
+    <Grid>
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Activitys}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:ActivityTimeSlot}">
+                        <Grid Margin="5" Tag="{Binding}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="20" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="96" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.ContextMenu>
+                                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.Tag}" Opened="TimeSlotContextMenuOpened">
+                                    <MenuItem Header="Add Time"
+                                              Icon="{m:MaterialDesignIcon Icon=PlusCircleOutline}"
+                                              IsEnabled="{Binding IsRunning, Converter={StaticResource BoolNegationConverter}}">
+                                        <MenuItem Click="AddTimeMenuItemClicked"
+                                                  Header="1 Minute"
+                                                  Tag="1" />
+                                        <MenuItem Click="AddTimeMenuItemClicked"
+                                                  Header="2 Minutes"
+                                                  Tag="2" />
+                                        <MenuItem Click="AddTimeMenuItemClicked"
+                                                  Header="5 Minutes"
+                                                  Tag="5" />
+                                        <MenuItem Click="AddTimeMenuItemClicked"
+                                                  Header="10 Minutes"
+                                                  Tag="10" />
+                                        <MenuItem Click="AddTimeMenuItemClicked"
+                                                  Header="15 Minutes"
+                                                  Tag="15" />
+                                        <MenuItem Click="AddTimeMenuItemClicked"
+                                                  Header="20 Minutes"
+                                                  Tag="20" />
+                                        <MenuItem Click="AddTimeMenuItemClicked"
+                                                  Header="30 Minutes"
+                                                  Tag="30" />
+                                        <Separator />
+                                        <MenuItem StaysOpenOnClick="True" Tag="1">
+                                            <m:Theming.ThemeOverrides>
+                                                <m:ThemeOverrideCollection>
+                                                    <m:ThemeOverride Key="MenuItemHoverBackgroundBrush" Value="{m:ThemeValue Key=MenuItemNormalBackgroundBrush}" />
+                                                    <m:ThemeOverride Key="MenuItemHoverBorderBrush" Value="{m:ThemeValue Key=MenuItemNormalBorderBrush}" />
+                                                    <m:ThemeOverride Key="MenuItemHoverForegroundBrush" Value="{m:ThemeValue Key=MenuItemNormalForegroundBrush}" />
+                                                    <m:ThemeOverride Key="MenuItemPressBackgroundBrush" Value="{m:ThemeValue Key=MenuItemNormalBackgroundBrush}" />
+                                                    <m:ThemeOverride Key="MenuItemPressBorderBrush" Value="{m:ThemeValue Key=MenuItemNormalBorderBrush}" />
+                                                    <m:ThemeOverride Key="MenuItemPressForegroundBrush" Value="{m:ThemeValue Key=MenuItemNormalForegroundBrush}" />
+                                                </m:ThemeOverrideCollection>
+                                            </m:Theming.ThemeOverrides>
+                                            <MenuItem.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <mct:TextBox x:Name="CustomAddAmountTextBox"
+                                                                 MinWidth="120"
+                                                                 DecimalPlaces="0"
+                                                                 IsUpDownEnabled="True"
+                                                                 Maximum="999"
+                                                                 Minimum="1"
+                                                                 OnlyNumericValues="True"
+                                                                 StepSize="1"
+                                                                 Suffix="Minutes" />
+                                                    <mct:IconButton Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                                                    Padding="8"
+                                                                    Click="AddTimeMenuItemClicked"
+                                                                    Icon="{m:MaterialDesignIcon Icon=Plus}"
+                                                                    Tag="CustomAddAmountTextBox" />
+                                                </StackPanel>
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                    </MenuItem>
+                                    <Separator />
+                                    <MenuItem Click="RemoveActivityItemClicked" Icon="{m:MaterialDesignIcon Icon=TrashCan}">
+                                        <MenuItem.Header>
+                                            <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.Tag.ActivityName, StringFormat='Remove &quot;{0}&quot;...'}" />
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+
+                            <Grid Width="64"
+                                  Height="64"
+                                  Margin="0,10,0,0">
+                                <Ellipse>
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Opacity="0.1" Color="{m:ThemeValue Key=NormalForegroundColor}" />
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=StartStopButton, Path=IsMouseOver}" Value="False" />
+                                                        <!--<Condition Binding="{Binding IsRunning}" Value="False" />-->
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Fill">
+                                                        <Setter.Value>
+                                                            <SolidColorBrush Opacity="0.25" Color="{m:ThemeValue Key=NormalForegroundColor}" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="26"
+                                           FontWeight="SemiBold"
+                                           Text="{Binding ShortName}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Opacity="0.3" Color="{m:ThemeValue Key=NormalForegroundColor}" />
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ElementName=StartStopButton, Path=IsMouseOver}" Value="False" />
+                                                        <!--<Condition Binding="{Binding IsRunning}" Value="False" />-->
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Foreground" Value="{m:ThemeValue Key=NormalForegroundBrush}" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <Border Padding="10,1"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Bottom"
+                                        Background="{m:ThemeValue Key=HighlightBrush}"
+                                        CornerRadius="8">
+                                    <TextBlock FontWeight="SemiBold"
+                                               Foreground="{m:ThemeValue Key=HighlightContrastBrush}"
+                                               Text="{Binding SlotCount}" />
+                                </Border>
+                                <Border Margin="0,-10,0,0"
+                                        Padding="0,1"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Top"
+                                        Background="{m:ThemeValue Key=HighlightBrush}"
+                                        CornerRadius="8"
+                                        Visibility="{Binding IsRunning, Converter={StaticResource TrueToVisibleConverter}}">
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="1"
+                                               HorizontalAlignment="Center"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{m:ThemeValue Key=HighlightContrastBrush}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0:0}:{1:00}:{2:00}">
+                                                <Binding Converter="{StaticResource NumberFloorConverter}" Path="CurrentTime.TotalHours" />
+                                                <Binding Path="CurrentTime.Minutes" />
+                                                <Binding Path="CurrentTime.Seconds" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </Border>
+                                <mct:IconButton x:Name="StartStopButton"
+                                                Padding="16"
+                                                HorizontalContentAlignment="Stretch"
+                                                VerticalContentAlignment="Stretch"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType=local:MainView}, Path=DataContext.ToggleTimeSlotCommand}"
+                                                CommandParameter="{Binding}">
+                                    <m:Theming.ThemeOverrides>
+                                        <m:ThemeOverrideCollection>
+                                            <m:ThemeOverride Key="ButtonCornerRadius">
+                                                <m:ThemeOverride.Value>
+                                                    <sys:Double>32</sys:Double>
+                                                </m:ThemeOverride.Value>
+                                            </m:ThemeOverride>
+                                            <m:ThemeOverride Key="ButtonNormalBackgroundBrush">
+                                                <m:ThemeOverride.Value>
+                                                    <SolidColorBrush Color="Transparent" />
+                                                </m:ThemeOverride.Value>
+                                            </m:ThemeOverride>
+                                            <m:ThemeOverride Key="ButtonNormalForegroundBrush">
+                                                <m:ThemeOverride.Value>
+                                                    <SolidColorBrush Color="Transparent" />
+                                                </m:ThemeOverride.Value>
+                                            </m:ThemeOverride>
+                                        </m:ThemeOverrideCollection>
+                                    </m:Theming.ThemeOverrides>
+                                    <mct:IconButton.Style>
+                                        <Style TargetType="mct:IconButton">
+                                            <Setter Property="Icon" Value="{StaticResource StartIcon}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                    <Setter Property="Icon" Value="{StaticResource StopIcon}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </mct:IconButton.Style>
+                                </mct:IconButton>
+                            </Grid>
+
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding ActivityName}"
+                                       TextAlignment="Center" />
+
+                            <Border Grid.Row="2"
+                                    CornerRadius="8"
+                                    Visibility="{Binding IsRunning, Converter={StaticResource TrueToVisibleConverter}}">
+                                <Border.Background>
+                                    <SolidColorBrush Opacity="0.3" Color="{m:ThemeValue Key=HighlightColor}" />
+                                </Border.Background>
+                                <Border.Resources>
+                                    <Style TargetType="mct:IconButton">
+                                        <Setter Property="Padding" Value="4" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </Style>
+                                </Border.Resources>
+                                <m:Theming.ThemeOverrides>
+                                    <m:ThemeOverrideCollection>
+                                        <m:ThemeOverride Key="ButtonCornerRadius">
+                                            <CornerRadius>0</CornerRadius>
+                                        </m:ThemeOverride>
+                                    </m:ThemeOverrideCollection>
+                                </m:Theming.ThemeOverrides>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <mct:IconButton Grid.Column="0"
+                                                    Click="AddCurrenTimeButtonClicked"
+                                                    Icon="{m:MaterialDesignIcon Icon=MinusThick}"
+                                                    Tag="-5">
+                                        <m:Theming.ThemeOverrides>
+                                            <m:ThemeOverrideCollection>
+                                                <m:ThemeOverride Key="ButtonCornerRadius">
+                                                    <CornerRadius>8,0,0,8</CornerRadius>
+                                                </m:ThemeOverride>
+                                            </m:ThemeOverrideCollection>
+                                        </m:Theming.ThemeOverrides>
+                                    </mct:IconButton>
+                                    <mct:IconButton Grid.Column="1"
+                                                    Click="AddCurrenTimeButtonClicked"
+                                                    Icon="{m:MaterialDesignIcon Icon=Minus}"
+                                                    Tag="-1" />
+                                    <mct:IconButton Grid.Column="2"
+                                                    Click="AddCurrenTimeButtonClicked"
+                                                    Icon="{m:MaterialDesignIcon Icon=Plus}"
+                                                    Tag="1" />
+                                    <mct:IconButton Grid.Column="3"
+                                                    Click="AddCurrenTimeButtonClicked"
+                                                    Icon="{m:MaterialDesignIcon Icon=PlusThick}"
+                                                    Tag="5">
+                                        <m:Theming.ThemeOverrides>
+                                            <m:ThemeOverrideCollection>
+                                                <m:ThemeOverride Key="ButtonCornerRadius">
+                                                    <CornerRadius>0,8,8,0</CornerRadius>
+                                                </m:ThemeOverride>
+                                            </m:ThemeOverrideCollection>
+                                        </m:Theming.ThemeOverrides>
+                                    </mct:IconButton>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Row="2" Visibility="{Binding IsRunning, Converter={StaticResource FalseToVisibleConverter}}">
+                                <TextBlock Grid.Column="1"
+                                           Height="20"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="14"
+                                           FontWeight="SemiBold">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0:00}:{1:00}:{2:00}">
+                                            <Binding Converter="{StaticResource NumberFloorConverter}" Path="TotalTime.TotalHours" />
+                                            <Binding Path="TotalTime.Minutes" />
+                                            <Binding Path="TotalTime.Seconds" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <mct:IconButton Width="32"
+                        Height="32"
+                        Padding="6"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Command="{Binding CreateActivityCommand}"
+                        DockPanel.Dock="Right"
+                        Icon="{m:MaterialDesignIcon Icon=Plus}" />
+    </Grid>
+</mct:Window>
