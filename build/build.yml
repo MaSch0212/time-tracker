@@ -36,7 +36,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    arguments: '-c Release -f net5.0-windows -r win-x64 -p:OutputZipDir=$(Build.ArtifactStagingDirectory) -p:TreatWarningsAsErrors=true'
+    arguments: '-c Release -f net5.0-windows -p:OutputZipDir=$(Build.ArtifactStagingDirectory) -p:TreatWarningsAsErrors=true'
     zipAfterPublish: false
 
 - task: PublishBuildArtifacts@1
